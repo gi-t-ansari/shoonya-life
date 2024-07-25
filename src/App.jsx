@@ -1,10 +1,15 @@
 import React from "react";
+import { BrowserRouter, Route, Routes } from "react-router-dom";
+import { APP_URL } from "./config";
+import { Layout } from "./common";
 
 function App() {
   return (
-    <h1 className="text-3xl font-bold underline text-center text-red-500">
-      Hello world!
-    </h1>
+    <BrowserRouter>
+      <Routes>
+        <Route path={APP_URL.HOME} element={<Layout />} />
+      </Routes>
+    </BrowserRouter>
   );
 }
 
