@@ -1,3 +1,3 @@
 export { Layout } from "./layout";
-export { CircularProgress } from "./components";
+export { CircularProgress, Button } from "./components";
 export { requireAuth, requireNoAuth } from "./hoc";
