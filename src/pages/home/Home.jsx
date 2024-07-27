@@ -112,7 +112,7 @@ const Home = () => {
                 type="date"
                 value={selectedDate}
                 onChange={(e) => setSelectedDate(e.target.value)}
-                className="md:w-fit w-full px-2 py-1 border border-primary rounded-md  md:bg-primary  md:text-white placeholder:text-gray-400"
+                className="md:w-fit w-full px-2 md:py-1 py-1.5 border border-primary rounded-md  md:bg-primary  md:text-white placeholder:text-gray-400"
               />
             </div>
 
@@ -153,7 +153,7 @@ const Home = () => {
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
             />
-            <Button
+            <button
               onClick={handleClearFilter}
               disabled={
                 !selectedDate &&
@@ -161,10 +161,14 @@ const Home = () => {
                 !selectedLocation &&
                 !searchTerm
               }
-              color={"red"}
+              className={` p-2 px-3 text-white text-sm font-semibold md:rounded-md rounded-full ${
+                selectedDate || selectedType || selectedLocation || searchTerm
+                  ? "bg-red-500"
+                  : "bg-gray-400"
+              }`}
             >
               Clear Filter
-            </Button>
+            </button>
           </div>
         </div>
 
