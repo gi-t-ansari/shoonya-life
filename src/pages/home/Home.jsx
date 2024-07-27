@@ -180,10 +180,12 @@ const Home = () => {
         </div>
 
         {/**------------------- SHOWING NOT FOUND TEXT IF NO DATA FOUND AFTER FILTER ------------------ */}
-        <div className="w-full text-center">
+        <div>
           {(selectedDate || selectedType || selectedLocation || searchTerm) &&
             eventData?.length === 0 && (
-              <h1 className="text-lg font-semibold">No Retreats Found</h1>
+              <h1 className="text-lg font-semibold text-center mt-[20vh]">
+                No Retreats Found
+              </h1>
             )}
         </div>
 
