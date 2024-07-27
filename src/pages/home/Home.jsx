@@ -161,7 +161,7 @@ const Home = () => {
                 !selectedLocation &&
                 !searchTerm
               }
-              className={` p-2 px-3 text-white text-sm font-semibold md:rounded-md rounded-full ${
+              className={`p-2 px-3 text-white text-sm font-semibold md:rounded-md rounded-full ${
                 selectedDate || selectedType || selectedLocation || searchTerm
                   ? "bg-red-500"
                   : "bg-gray-400"
