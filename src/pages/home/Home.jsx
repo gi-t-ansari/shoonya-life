@@ -153,7 +153,18 @@ const Home = () => {
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
             />
-            <Button onClick={handleClearFilter}>Clear Filter</Button>
+            <Button
+              onClick={handleClearFilter}
+              disabled={
+                !selectedDate &&
+                !selectedType &&
+                !selectedLocation &&
+                !searchTerm
+              }
+              color={"red"}
+            >
+              Clear Filter
+            </Button>
           </div>
         </div>
 
