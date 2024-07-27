@@ -112,7 +112,7 @@ const Home = () => {
                 type="date"
                 value={selectedDate}
                 onChange={(e) => setSelectedDate(e.target.value)}
-                className="md:w-fit w-full appearance-none px-2 py-1 border border-primary rounded-md  md:bg-primary  md:text-white placeholder:text-gray-400"
+                className="md:w-fit w-full px-2 py-1 border border-primary rounded-md  md:bg-primary  md:text-white placeholder:text-gray-400"
               />
             </div>
 
