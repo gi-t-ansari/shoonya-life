@@ -1,5 +1,6 @@
 export const APP_URL = {
   HOME: "/",
+  RETREAT_DETAILS: "/:id",
 };
 
 export const API_URL = {

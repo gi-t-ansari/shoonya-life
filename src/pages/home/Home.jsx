@@ -5,14 +5,18 @@ import { CircularProgress } from "../../common";
 import { EventCard } from "../../components";
 import { Button } from "../../common";
 import { API_URL, LOCATION_OPTIONS, TYPE_OPTIONS } from "../../config";
+import moment from "moment";
 
 const Home = () => {
   const [eventData, setEventData] = useState([]);
   const [startIndex, setStartIndex] = useState(0);
-  const [location, setLocation] = useState("");
-  const [type, setType] = useState("");
+  const [selectedLocation, setSelectedLocation] = useState("");
+  const [searchTerm, setSearchTerm] = useState("");
+  const [selectedDate, setSelectedDate] = useState("");
+  const [selectedType, setSelectedType] = useState("");
   const [endIndex, setEndIndex] = useState(4);
 
+  /**------------ FETCHING DATA ---------------*/
   const { data } = useQuery({
     queryKey: ["events"],
     queryFn: () => getData(API_URL.MAIN),
@@ -24,41 +28,62 @@ const Home = () => {
     },
   });
 
-  console.log("data", data);
+  // console.log("data", data);
 
-  const handleTypeFilter = () => {
-    if (type) {
+  /**----------------- HANDLING SEARCH AND FILTER -------------------*/
+  const handleFilterAndSearch = () => {
+    if (selectedType) {
       const filteredData = data?.filter((item) =>
-        item?.tag?.includes(type.toLowerCase())
+        item?.tag?.includes(selectedType?.toLowerCase())
       );
       setEventData(filteredData);
-    } else {
-      setEventData(data);
+      return;
     }
-  };
 
-  const handleLocationFilter = () => {
-    if (location) {
+    if (selectedLocation) {
       const filteredData = data?.filter(
-        (item) => item?.location?.toLowerCase() === location.toLowerCase()
+        (item) =>
+          item?.location?.toLowerCase() === selectedLocation?.toLowerCase()
       );
       setEventData(filteredData);
-    } else {
-      setEventData(data);
+      return;
     }
+
+    if (searchTerm) {
+      const filteredData = data?.filter(
+        (item) =>
+          item?.title?.toLowerCase().includes(searchTerm) ||
+          item?.description?.toLowerCase().includes(searchTerm) ||
+          item?.location?.toLowerCase().includes(searchTerm) ||
+          item?.tag?.includes(searchTerm)
+      );
+      setEventData(filteredData);
+      return;
+    }
+
+    if (selectedDate) {
+      const filteredData = data?.filter((item) => {
+        const startDate = moment.unix(item?.date).format("YYYY-MM-DD");
+        const endDate = moment(startDate).add(item?.duration - 1, "days");
+        return moment(selectedDate).isBetween(startDate, endDate);
+      });
+      setEventData(filteredData);
+      return;
+    }
+
+    setEventData(data);
   };
 
   useEffect(() => {
-    handleLocationFilter();
-  }, [location]);
+    handleFilterAndSearch();
+  }, [selectedType, selectedLocation, searchTerm, selectedDate]);
 
-  useEffect(() => {
-    handleTypeFilter();
-  }, [type]);
-
+  /**--------- HANDLING CLEAR FILTER ---------------*/
   const handleClearFilter = () => {
-    setType("");
-    setLocation("");
+    setSelectedType("");
+    setSelectedLocation("");
+    setSelectedDate("");
+    setSearchTerm("");
   };
 
   /**--------- HANDLING PAGINATION ---------*/
@@ -75,10 +100,20 @@ const Home = () => {
   return (
     <div>
       {/**------------------- FILTER & SEARCH ----------------- */}
-      <div>
-        <div className="flex md:flex-row flex-col md:gap-x-2 gap-y-2 md:items-center mb-4">
-          <input type="date" placeholder="Filter by Date" />
-          <select onChange={(e) => setType(e.target.value)} value={type}>
+      <div className="flex lg:flex-row flex-col justify-between items-center">
+        <div className="md:w-fit w-full flex md:flex-row flex-col md:gap-x-2 gap-y-2 md:items-center mb-4 ">
+          <input
+            type="date"
+            placeholder="Filter by Date"
+            value={selectedDate}
+            onChange={(e) => setSelectedDate(e.target.value)}
+            className="w-full px-2 py-1.5 border rounded-md md:bg-primary md:text-white placeholder:text-gray-400"
+          />
+          <select
+            onChange={(e) => setSelectedType(e.target.value)}
+            value={selectedType}
+            className="w-full px-2 py-1.5 border rounded-md md:bg-primary md:text-white "
+          >
             <option value={""} className="text-gray-400">
               Filter by Type
             </option>
@@ -89,8 +124,9 @@ const Home = () => {
             ))}
           </select>
           <select
-            onChange={(e) => setLocation(e.target.value)}
-            value={location}
+            onChange={(e) => setSelectedLocation(e.target.value)}
+            value={selectedLocation}
+            className="w-full px-2 py-1.5 border rounded-md md:bg-primary md:text-white  "
           >
             <option value={""} className="text-gray-400">
               Filter by Location
@@ -101,9 +137,17 @@ const Home = () => {
               </option>
             ))}
           </select>
+        </div>
+        <div className="md:w-fit w-full flex md:flex-row flex-col md:gap-x-2 gap-y-2 md:items-center mb-4">
+          <input
+            className="px-2 py-1.5 border border-primary focus:border-primary rounded-md  md:w-[300px] w-full"
+            type="text"
+            placeholder="Search retreats by title"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+          />
           <Button onClick={handleClearFilter}>Clear Filter</Button>
         </div>
-        <div></div>
       </div>
 
       {/**------------------- EVENT CARDS -------------------- */}
@@ -116,10 +160,16 @@ const Home = () => {
           <CircularProgress />
         )}
       </div>
+      <div className="w-full text-center">
+        {(selectedDate || selectedType || selectedLocation || searchTerm) &&
+          eventData?.length === 0 && (
+            <h1 className="text-lg font-semibold">No Retreats Found</h1>
+          )}
+      </div>
 
       {/**-------------------- PAGINATION ---------------------*/}
       <div className="w-full my-3 flex justify-center gap-x-2">
-        {eventData && (
+        {eventData?.length > 4 && (
           <>
             <Button disabled={startIndex <= 0} onClick={handlePrevious}>
               Previous

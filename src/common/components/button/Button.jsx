@@ -5,7 +5,7 @@ const Button = ({ children, onClick, disabled }) => {
     <button
       onClick={onClick}
       disabled={disabled}
-      className={` p-2 px-3 text-white text-sm font-semibold lg:rounded-md rounded-full ${
+      className={` p-2 px-3 text-white text-sm font-semibold md:rounded-md rounded-full ${
         !disabled ? "shadow-md hover:shadow-gray-500 bg-primary" : "bg-gray-400"
       }`}
     >
