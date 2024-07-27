@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { getData } from "../../api/callApi";
 import { CircularProgress } from "../../common";
 import { EventCard } from "../../components";
@@ -9,6 +9,8 @@ import { API_URL, LOCATION_OPTIONS, TYPE_OPTIONS } from "../../config";
 const Home = () => {
   const [eventData, setEventData] = useState([]);
   const [startIndex, setStartIndex] = useState(0);
+  const [location, setLocation] = useState("");
+  const [type, setType] = useState("");
   const [endIndex, setEndIndex] = useState(4);
 
   const { data } = useQuery({
@@ -24,21 +26,39 @@ const Home = () => {
 
   console.log("data", data);
 
-  const handleTypeFilter = (e) => {
-    e.preventDefault();
-    const filteredData = data?.filter((item) =>
-      item?.tag?.includes(e?.target?.value?.toLowerCase())
-    );
-    setEventData(filteredData);
+  const handleTypeFilter = () => {
+    if (type) {
+      const filteredData = data?.filter((item) =>
+        item?.tag?.includes(type.toLowerCase())
+      );
+      setEventData(filteredData);
+    } else {
+      setEventData(data);
+    }
   };
 
-  const handleLocationFilter = (e) => {
-    e.preventDefault();
-    const filteredData = data?.filter(
-      (item) =>
-        item?.location?.toLowerCase() === e?.target?.value?.toLowerCase()
-    );
-    setEventData(filteredData);
+  const handleLocationFilter = () => {
+    if (location) {
+      const filteredData = data?.filter(
+        (item) => item?.location?.toLowerCase() === location.toLowerCase()
+      );
+      setEventData(filteredData);
+    } else {
+      setEventData(data);
+    }
+  };
+
+  useEffect(() => {
+    handleLocationFilter();
+  }, [location]);
+
+  useEffect(() => {
+    handleTypeFilter();
+  }, [type]);
+
+  const handleClearFilter = () => {
+    setType("");
+    setLocation("");
   };
 
   /**--------- HANDLING PAGINATION ---------*/
@@ -56,37 +76,38 @@ const Home = () => {
     <div>
       {/**------------------- FILTER & SEARCH ----------------- */}
       <div>
-        <div>
+        <div className="flex md:flex-row flex-col md:gap-x-2 gap-y-2 md:items-center mb-4">
           <input type="date" placeholder="Filter by Date" />
-          <select onChange={handleTypeFilter}>
-            <option className="text-gray-400">Filter by Type</option>
+          <select onChange={(e) => setType(e.target.value)} value={type}>
+            <option value={""} className="text-gray-400">
+              Filter by Type
+            </option>
             {TYPE_OPTIONS.map((item) => (
-              <option
-                key={item}
-                value={item}
-                className="uppercase cursor-pointer"
-              >
+              <option key={item} value={item}>
                 {item}
               </option>
             ))}
           </select>
-          <select onChange={handleLocationFilter}>
-            <option className="text-gray-400">Filter by Location</option>
+          <select
+            onChange={(e) => setLocation(e.target.value)}
+            value={location}
+          >
+            <option value={""} className="text-gray-400">
+              Filter by Location
+            </option>
             {LOCATION_OPTIONS.map((item) => (
-              <option
-                key={item}
-                value={item}
-                className="uppercase cursor-pointer"
-              >
+              <option key={item} value={item}>
                 {item}
               </option>
             ))}
           </select>
+          <Button onClick={handleClearFilter}>Clear Filter</Button>
         </div>
+        <div></div>
       </div>
 
       {/**------------------- EVENT CARDS -------------------- */}
-      <div className="flex flex-wrap lg:justify-between justify-center md:gap-4 gap-3">
+      <div className="flex flex-wrap justify-evenly  gap-4">
         {eventData ? (
           eventData
             ?.slice(startIndex, endIndex)
