@@ -98,92 +98,98 @@ const Home = () => {
   };
 
   return (
-    <div>
-      {/**------------------- FILTER & SEARCH ----------------- */}
-      <div className="flex lg:flex-row flex-col justify-between items-center">
-        <div className="md:w-fit w-full flex md:flex-row flex-col md:gap-x-2 gap-y-2 md:items-center mb-4 ">
-          <input
-            type="date"
-            placeholder="Filter by Date"
-            value={selectedDate}
-            onChange={(e) => setSelectedDate(e.target.value)}
-            className="w-full px-2 py-1.5 border rounded-md md:bg-primary md:text-white placeholder:text-gray-400"
-          />
-          <select
-            onChange={(e) => setSelectedType(e.target.value)}
-            value={selectedType}
-            className="w-full px-2 py-1.5 border rounded-md md:bg-primary md:text-white "
-          >
-            <option value={""} className="text-gray-400">
-              Filter by Type
-            </option>
-            {TYPE_OPTIONS.map((item) => (
-              <option key={item} value={item}>
-                {item}
-              </option>
-            ))}
-          </select>
-          <select
-            onChange={(e) => setSelectedLocation(e.target.value)}
-            value={selectedLocation}
-            className="w-full px-2 py-1.5 border rounded-md md:bg-primary md:text-white  "
-          >
-            <option value={""} className="text-gray-400">
-              Filter by Location
-            </option>
-            {LOCATION_OPTIONS.map((item) => (
-              <option key={item} value={item}>
-                {item}
-              </option>
-            ))}
-          </select>
-        </div>
-        <div className="md:w-fit w-full flex md:flex-row flex-col md:gap-x-2 gap-y-2 md:items-center mb-4">
-          <input
-            className="px-2 py-1.5 border border-primary focus:border-primary rounded-md  md:w-[300px] w-full"
-            type="text"
-            placeholder="Search retreats by title"
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-          />
-          <Button onClick={handleClearFilter}>Clear Filter</Button>
-        </div>
-      </div>
+    eventData && (
+      <div>
+        {/**------------------- FILTER & SEARCH ----------------- */}
+        <div className="flex lg:flex-row flex-col justify-between items-center ">
+          <div className="md:w-fit w-full flex md:flex-row flex-col md:gap-x-3 gap-y-2 md:items-center md:mb-4 mb-2 ">
+            <div>
+              <label htmlFor="dateFilter" className="mr-1">
+                Filter by Date:
+              </label>
+              <input
+                id="dateFilter"
+                type="date"
+                value={selectedDate}
+                onChange={(e) => setSelectedDate(e.target.value)}
+                className="md:w-fit w-full appearance-none px-2 py-1 border border-primary rounded-md  md:bg-primary  md:text-white placeholder:text-gray-400"
+              />
+            </div>
 
-      {/**------------------- EVENT CARDS -------------------- */}
-      <div className="flex flex-wrap justify-evenly  gap-4">
-        {eventData ? (
-          eventData
-            ?.slice(startIndex, endIndex)
-            .map((item) => <EventCard key={item?.id} cardData={item} />)
-        ) : (
-          <CircularProgress />
-        )}
-      </div>
-      <div className="w-full text-center">
-        {(selectedDate || selectedType || selectedLocation || searchTerm) &&
-          eventData?.length === 0 && (
-            <h1 className="text-lg font-semibold">No Retreats Found</h1>
-          )}
-      </div>
-
-      {/**-------------------- PAGINATION ---------------------*/}
-      <div className="w-full my-3 flex justify-center gap-x-2">
-        {eventData?.length > 4 && (
-          <>
-            <Button disabled={startIndex <= 0} onClick={handlePrevious}>
-              Previous
-            </Button>
-            <Button
-              disabled={endIndex >= eventData?.length}
-              onClick={handleNext}
+            <select
+              onChange={(e) => setSelectedType(e.target.value)}
+              value={selectedType}
+              className=" md:w-fit w-full  px-2 py-1.5 border border-primary rounded-md  md:bg-primary  md:text-white "
             >
-              Next
-            </Button>
-          </>
-        )}
+              <option value={""} className="text-gray-400">
+                Filter by Type
+              </option>
+              {TYPE_OPTIONS.map((item) => (
+                <option key={item} value={item}>
+                  {item}
+                </option>
+              ))}
+            </select>
+            <select
+              onChange={(e) => setSelectedLocation(e.target.value)}
+              value={selectedLocation}
+              className="md:w-fit w-full px-2 py-1.5 border border-primary rounded-md md:bg-primary md:text-white  "
+            >
+              <option value={""} className="text-gray-400">
+                Filter by Location
+              </option>
+              {LOCATION_OPTIONS.map((item) => (
+                <option key={item} value={item}>
+                  {item}
+                </option>
+              ))}
+            </select>
+          </div>
+          <div className="md:w-fit w-full flex md:flex-row flex-col md:gap-x-2 gap-y-2 md:items-center mb-4">
+            <input
+              className="w-full px-2 py-1.5 border border-primary focus:border-primary rounded-md  md:w-[300px] shadow-md"
+              type="text"
+              placeholder="Search retreats by title"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+            />
+            <Button onClick={handleClearFilter}>Clear Filter</Button>
+          </div>
+        </div>
+
+        {/**------------------- EVENT CARDS -------------------- */}
+        <div className="flex flex-wrap justify-evenly  gap-4 md:my-4 mb-2">
+          {eventData?.slice(startIndex, endIndex).map((item) => (
+            <EventCard key={item?.id} cardData={item} />
+          ))}
+        </div>
+
+        {/**------------------- SHOWING NOT FOUND TEXT IF NO DATA FOUND AFTER FILTER ------------------ */}
+        <div className="w-full text-center">
+          {(selectedDate || selectedType || selectedLocation || searchTerm) &&
+            eventData?.length === 0 && (
+              <h1 className="text-lg font-semibold">No Retreats Found</h1>
+            )}
+        </div>
+
+        {/**-------------------- PAGINATION ---------------------*/}
+        <div className="w-full md:mt-8 mb-12 mb flex justify-center gap-x-2">
+          {eventData?.length > 4 && (
+            <>
+              <Button disabled={startIndex <= 0} onClick={handlePrevious}>
+                Previous
+              </Button>
+              <Button
+                disabled={endIndex >= eventData?.length}
+                onClick={handleNext}
+              >
+                Next
+              </Button>
+            </>
+          )}
+        </div>
       </div>
-    </div>
+    )
   );
 };
 
